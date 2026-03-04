@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:your_days/screens/initial_page.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:your_days/app.dart';
+import 'package:your_days/services/preferences_service.dart';
+import 'package:your_days/services/weekly_word_service.dart';
 
-void main() {
+void main() async {
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  await PreferencesService.init();
+  await WeeklyWordService.instance.init();
+
+  FlutterNativeSplash.remove();
   runApp(const MyApp());
 }
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: InitialHome());
-  }
-}
-
-
