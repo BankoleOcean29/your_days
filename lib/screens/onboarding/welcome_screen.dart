@@ -59,61 +59,68 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 48),
-
-                // ── Decorative mini dot grid ───────────────────────────────
-                Center(
-                  child: SizedBox(
-                    width: 200,
-                    height: 100,
-                    child: AnimatedBuilder(
-                      animation: _pulse,
-                      builder: (_, __) => CustomPaint(
-                        painter: _MiniDotPainter(
-                          todayScale: _pulse.value,
-                          exhaustedColor: isLight
-                              ? ColorTokens.dotExhaustedLight
-                              : ColorTokens.dotExhaustedDark,
-                          todayColor: primary,
-                          remainingColor: isLight
-                              ? ColorTokens.dotRemainingLight
-                              : ColorTokens.dotRemainingDark,
+                // ── Centered content block ──────────────────────────────────
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Decorative mini dot grid ─────────────────────────
+                        Center(
+                          child: SizedBox(
+                            width: 200,
+                            height: 100,
+                            child: AnimatedBuilder(
+                              animation: _pulse,
+                              builder: (_, __) => CustomPaint(
+                                painter: _MiniDotPainter(
+                                  todayScale: _pulse.value,
+                                  exhaustedColor: isLight
+                                      ? ColorTokens.dotExhaustedLight
+                                      : ColorTokens.dotExhaustedDark,
+                                  todayColor: primary,
+                                  remainingColor: isLight
+                                      ? ColorTokens.dotRemainingLight
+                                      : ColorTokens.dotRemainingDark,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+
+                        const SizedBox(height: 40),
+
+                        // ── Title ────────────────────────────────────────────
+                        Text(
+                          'See your year\nunfold.',
+                          style: GoogleFonts.lora(
+                            fontSize: 34,
+                            fontWeight: FontWeight.bold,
+                            color: isLight
+                                ? ColorTokens.neutral900Light
+                                : ColorTokens.neutral900Dark,
+                            height: 1.2,
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // ── Subtitle ─────────────────────────────────────────
+                        Text(
+                          '365 dots. One for each day. Watch as the year fills in — and make the most of what\'s left.',
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            color: neutral600,
+                            height: 1.6,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 40),
-
-                // ── Title ──────────────────────────────────────────────────
-                Text(
-                  'See your year\nunfold.',
-                  style: GoogleFonts.lora(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                    color: isLight
-                        ? ColorTokens.neutral900Light
-                        : ColorTokens.neutral900Dark,
-                    height: 1.2,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // ── Subtitle ───────────────────────────────────────────────
-                Text(
-                  '365 dots. One for each day. Watch as the year fills in — and make the most of what\'s left.',
-                  style: GoogleFonts.nunito(
-                    fontSize: 16,
-                    color: neutral600,
-                    height: 1.6,
-                  ),
-                ),
-
-                const Spacer(),
-
-                // ── CTA ────────────────────────────────────────────────────
+                // ── CTA ──────────────────────────────────────────────────────
                 PrimaryButton(label: 'Get started', onPressed: _next),
 
                 const SizedBox(height: 32),

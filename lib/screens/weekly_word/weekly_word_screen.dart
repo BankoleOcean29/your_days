@@ -20,6 +20,15 @@ class _WeeklyWordScreenState extends State<WeeklyWordScreen> {
   bool _showingPast = false;
 
   @override
+  void didUpdateWidget(WeeklyWordScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // IndexedStack keeps this mounted; rebuild whenever MainScaffold setState
+    // fires (e.g. switching tabs after changing belief track in Settings).
+    setState(() {});
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     final prefs = PreferencesService.instance;
     final now = DateTime.now();
@@ -160,7 +169,7 @@ class _WeeklyWordScreenState extends State<WeeklyWordScreen> {
   void _share(WeeklyWord word, int week) {
     final ref = word.reference != null ? '\n— ${word.reference}' : '';
     final text =
-        '"${word.text}"$ref\n\nWeek $week • Your Years app';
+        '"${word.text}"$ref\n\nWeek $week • Your Days app';
     // ignore: deprecated_member_use
     Share.share(text);
     AnalyticsService.instance.logWeeklyWordShared(
@@ -207,6 +216,8 @@ class _WordCard extends StatelessWidget {
     final quoteIsShort = word.text.length <= 80;
     final quoteFontSize = quoteIsShort ? 22.0 : 17.0;
 
+    // Use Stack for the accent bar — non-uniform Border + borderRadius throws
+    // an assertion in Flutter, so we draw the bar inside the clip instead.
     return Container(
       decoration: BoxDecoration(
         color: cardBg,
@@ -214,77 +225,78 @@ class _WordCard extends StatelessWidget {
         border: Border.all(color: trackColor.withAlpha(30)),
       ),
       clipBehavior: Clip.antiAlias,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Left accent bar — 3dp, full height, belief accent color ──
-            Container(width: 3, color: trackColor),
+      child: Stack(
+        children: [
+          // ── Left accent bar ──────────────────────────────────────────────
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: Container(width: 3, color: trackColor),
+          ),
 
-            // ── Card content ─────────────────────────────────────────────
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 20, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          // ── Card content ─────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(19, 16, 20, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Belief label + share icon row
+                Row(
                   children: [
-                    // Belief label + share icon row
-                    Row(
-                      children: [
-                        Text(
-                          trackLabel,
-                          style: GoogleFonts.nunito(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: trackColor,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        const Spacer(),
-                        GestureDetector(
-                          onTap: onShare,
-                          child: Icon(
-                            Icons.share_outlined,
-                            color: neutral500,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // Quote — Lora SemiBold Italic per spec
                     Text(
-                      word.text,
-                      style: GoogleFonts.lora(
-                        fontSize: quoteFontSize,
-                        fontWeight: FontWeight.w600,
-                        fontStyle: FontStyle.italic,
-                        height: 1.55,
-                        color: isLight
-                            ? ColorTokens.neutral800Light
-                            : ColorTokens.neutral800Dark,
+                      trackLabel,
+                      style: GoogleFonts.nunito(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: trackColor,
+                        letterSpacing: 1.0,
                       ),
                     ),
-
-                    // Attribution — body.small 12dp neutral.500
-                    if (word.reference != null) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        '— ${word.reference}',
-                        style: GoogleFonts.nunito(
-                          fontSize: 12,
-                          color: neutral500,
-                        ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: onShare,
+                      child: Icon(
+                        Icons.share_outlined,
+                        color: neutral500,
+                        size: 20,
                       ),
-                    ],
+                    ),
                   ],
                 ),
-              ),
+
+                const SizedBox(height: 14),
+
+                // Quote — Lora SemiBold Italic per spec
+                Text(
+                  word.text,
+                  style: GoogleFonts.lora(
+                    fontSize: quoteFontSize,
+                    fontWeight: FontWeight.w600,
+                    fontStyle: FontStyle.italic,
+                    height: 1.55,
+                    color: isLight
+                        ? ColorTokens.neutral800Light
+                        : ColorTokens.neutral800Dark,
+                  ),
+                ),
+
+                // Attribution — body.small 12dp neutral.500
+                if (word.reference != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    '— ${word.reference}',
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      color: neutral500,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

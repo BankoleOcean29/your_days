@@ -21,6 +21,15 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
+  void didUpdateWidget(SettingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // IndexedStack keeps this screen mounted; force a rebuild whenever
+    // MainScaffold calls setState (e.g. after a PIN is set from the Journal tab)
+    // so hasPinSet and other prefs are always fresh.
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     final prefs = PreferencesService.instance;
     final isLight = Theme.of(context).brightness == Brightness.light;
@@ -167,7 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Your Years',
+                    'Your Days',
                     style: GoogleFonts.lora(
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
@@ -232,6 +241,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (result != null) {
       final old = PreferencesService.instance.beliefTrack;
       PreferencesService.instance.beliefTrack = result;
+      if (result == 'astrology') {
+        final birthdate = PreferencesService.instance.userBirthdateAsDateTime;
+        if (birthdate != null) {
+          final detected = ZodiacUtils.fromBirthdate(birthdate);
+          if (detected != null) {
+            PreferencesService.instance.zodiacSign = detected;
+          }
+        }
+      }
       AnalyticsService.instance.logBeliefTrackChanged(
           fromTrack: old, toTrack: result);
       if (mounted) setState(() {});

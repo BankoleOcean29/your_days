@@ -96,11 +96,11 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             const SizedBox(height: 20),
-            // "Your Years"
+            // "Your Days"
             FadeTransition(
               opacity: _textFade,
               child: Text(
-                'Your Years',
+                'Your Days',
                 style: GoogleFonts.lora(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

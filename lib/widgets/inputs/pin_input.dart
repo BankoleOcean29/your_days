@@ -60,7 +60,10 @@ class PinDots extends StatelessWidget {
   }
 }
 
-/// 3×4 numeric keypad — spec: 64×64dp buttons, radius.full (circles), 28dp SemiBold.
+/// 3×4 numeric keypad — keys scale to fit any screen width.
+/// Each key is a circle; the diameter is computed from available width so the
+/// three-column layout always fits without overflow, capped at 76 dp so the
+/// keypad never grows taller than necessary on large screens.
 class PinKeypad extends StatelessWidget {
   final ValueChanged<String> onDigit;
   final VoidCallback onDelete;
@@ -73,26 +76,45 @@ class PinKeypad extends StatelessWidget {
     this.enabled = true,
   });
 
+  // Fixed horizontal margin on each side of every key (matches original spec).
+  static const double _keyMargin = 14.0;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _row(context, ['1', '2', '3']),
-        _row(context, ['4', '5', '6']),
-        _row(context, ['7', '8', '9']),
-        _row(context, ['', '0', '⌫']),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Each column = availableWidth / 3.
+        // Key diameter = column width minus the two margins; clamped so it
+        // never exceeds the original 76 dp (prevents height growth on wide
+        // screens) and never goes below 48 dp (keeps it usable on tiny ones).
+        final keySize =
+            (constraints.maxWidth / 3 - _keyMargin * 2).clamp(48.0, 76.0);
+        final fontSize = (keySize * 0.4).clamp(20.0, 30.0);
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _row(context, ['1', '2', '3'], keySize, fontSize),
+            _row(context, ['4', '5', '6'], keySize, fontSize),
+            _row(context, ['7', '8', '9'], keySize, fontSize),
+            _row(context, ['', '0', '⌫'], keySize, fontSize),
+          ],
+        );
+      },
     );
   }
 
-  Widget _row(BuildContext context, List<String> keys) {
+  Widget _row(
+      BuildContext context, List<String> keys, double keySize, double fontSize) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 9),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: keys
             .map((k) => _PinKey(
                   label: k,
+                  keySize: keySize,
+                  fontSize: fontSize,
                   onTap: k.isEmpty
                       ? null
                       : k == '⌫'
@@ -107,14 +129,20 @@ class PinKeypad extends StatelessWidget {
 
 class _PinKey extends StatelessWidget {
   final String label;
+  final double keySize;
+  final double fontSize;
   final VoidCallback? onTap;
 
-  const _PinKey({required this.label, this.onTap});
+  const _PinKey({
+    required this.label,
+    required this.keySize,
+    required this.fontSize,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
-    // Pressed/resting background — neutral.100 per spec
     final keyBg =
         isLight ? ColorTokens.neutral100Light : ColorTokens.neutral200Dark;
     final textColor =
@@ -123,46 +151,49 @@ class _PinKey extends StatelessWidget {
         isLight ? ColorTokens.neutral300Light : ColorTokens.neutral300Dark;
 
     if (label.isEmpty) {
-      // Empty placeholder cell — matches the 64dp width + 12dp margin each side
-      return const SizedBox(width: 64, height: 64);
+      // Invisible placeholder — same footprint as a real key.
+      return SizedBox(width: keySize + PinKeypad._keyMargin * 2, height: keySize);
     }
 
     final isIcon = label == '⌫';
     final isEnabled = onTap != null;
 
-    return GestureDetector(
-      onTap: () {
-        if (isEnabled) {
-          HapticFeedback.lightImpact();
-          onTap!();
-        }
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 80),
-        width: 64,
-        height: 64,
-        // 12dp margin each side = 24dp total gap between keys
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: isEnabled ? keyBg : Colors.transparent,
-          // radius.full on a square = perfect circle
-          shape: BoxShape.circle,
-        ),
-        alignment: Alignment.center,
-        child: isIcon
-            ? Icon(
-                Icons.backspace_outlined,
-                size: 24,
-                color: isEnabled ? textColor : disabledColor,
-              )
-            : Text(
-                label,
-                style: GoogleFonts.nunito(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
+    return MouseRegion(
+      cursor: isEnabled
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: GestureDetector(
+        onTap: () {
+          if (isEnabled) {
+            HapticFeedback.lightImpact();
+            onTap!();
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 80),
+          width: keySize,
+          height: keySize,
+          margin: const EdgeInsets.symmetric(horizontal: PinKeypad._keyMargin),
+          decoration: BoxDecoration(
+            color: isEnabled ? keyBg : Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+          alignment: Alignment.center,
+          child: isIcon
+              ? Icon(
+                  Icons.backspace_outlined,
+                  size: fontSize,
                   color: isEnabled ? textColor : disabledColor,
+                )
+              : Text(
+                  label,
+                  style: GoogleFonts.nunito(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w600,
+                    color: isEnabled ? textColor : disabledColor,
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

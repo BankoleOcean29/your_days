@@ -98,14 +98,14 @@ class _HomeScreenState extends State<HomeScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Home app bar — spec: "Your Years" Lora 22dp Bold primary + theme toggle ──
+              // ── Home app bar — spec: "Your Days" Lora 22dp Bold primary + theme toggle ──
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 8, 8),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Your Years',
+                      'Your Days',
                       style: GoogleFonts.lora(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

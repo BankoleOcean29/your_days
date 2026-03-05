@@ -34,8 +34,20 @@ class _JournalHubScreenState extends State<JournalHubScreen> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(JournalHubScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Triggered when MainScaffold rebuilds after unlock — kick off the real load.
+    if (PasscodeService.instance.isUnlocked && _loading) {
+      _loadEntries();
+    }
+  }
+
   Future<void> _loadEntries() async {
-    if (!PasscodeService.instance.isUnlocked) return;
+    if (!PasscodeService.instance.isUnlocked) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
     PasscodeService.instance.refreshSession();
     final entries = await JournalRepository.instance.getAllEntries();
     if (mounted) {
