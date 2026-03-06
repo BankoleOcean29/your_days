@@ -33,6 +33,10 @@ dependencies:
   # Date formatting & ISO week numbers
   intl: ^0.19.0
 
+  # Firebase
+  firebase_core: ^3.13.0
+  firebase_analytics: ^11.4.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -41,12 +45,11 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: true
-  image_path: "assets/icons/app_icon.png"
-  adaptive_icon_background: "#FBF8F5"
-  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
   ios: true
   image_path: "assets/icons/app_icon.png"
   remove_alpha_ios: true
+  adaptive_icon_background: "#FBF8F5"
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
   web:
     generate: true
     image_path: "assets/icons/app_icon.png"

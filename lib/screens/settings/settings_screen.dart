@@ -250,6 +250,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         }
       }
+      AnalyticsService.instance.logTrackSelected(track: result);
       AnalyticsService.instance.logBeliefTrackChanged(
           fromTrack: old, toTrack: result);
       if (mounted) setState(() {});

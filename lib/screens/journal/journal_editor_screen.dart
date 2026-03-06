@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:your_days/models/journal_entry.dart';
+import 'package:your_days/services/analytics_service.dart';
 import 'package:your_days/services/journal_repository.dart';
 import 'package:your_days/services/passcode_service.dart';
 import 'package:your_days/theme/color_tokens.dart';
@@ -70,6 +71,16 @@ class _JournalEditorScreenState extends State<JournalEditorScreen> {
     try {
       await JournalRepository.instance.saveEntry(entry);
       _savedBody = _body.text;
+
+      // Analytics — metadata only, never content
+      final words = _body.text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+      final bucket = words < 50 ? 'short' : words <= 200 ? 'medium' : 'long';
+      final days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+      AnalyticsService.instance.logJournalEntrySaved(
+        dayOfWeek: days[now.weekday - 1],
+        wordCountBucket: bucket,
+        isEdit: !_isNew,
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

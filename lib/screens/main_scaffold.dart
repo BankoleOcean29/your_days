@@ -5,8 +5,10 @@ import 'package:your_days/screens/journal/passcode_entry_screen.dart';
 import 'package:your_days/screens/journal/passcode_setup_screen.dart';
 import 'package:your_days/screens/settings/settings_screen.dart';
 import 'package:your_days/screens/weekly_word/weekly_word_screen.dart';
+import 'package:your_days/services/analytics_service.dart';
 import 'package:your_days/services/passcode_service.dart';
 import 'package:your_days/services/preferences_service.dart';
+import 'package:your_days/utils/date_utils.dart';
 import 'package:your_days/widgets/navigation/app_bottom_nav.dart';
 
 class MainScaffold extends StatefulWidget {
@@ -63,6 +65,13 @@ class _MainScaffoldState extends State<MainScaffold>
       _handleJournalTap();
     } else {
       setState(() => _currentIndex = index);
+      if (index == 2) {
+        // Weekly Word tab became active
+        AnalyticsService.instance.logWordsSectionViewed(
+          beliefTrack: PreferencesService.instance.beliefTrack,
+          weekNumber: AppDateUtils.weekOfYear(DateTime.now()),
+        );
+      }
     }
   }
 
@@ -82,6 +91,7 @@ class _MainScaffoldState extends State<MainScaffold>
             onSuccess: () {
               Navigator.of(context).pop();
               setState(() => _currentIndex = 1);
+              AnalyticsService.instance.logJournalHistoryViewed();
             },
           ),
         ),
@@ -94,6 +104,7 @@ class _MainScaffoldState extends State<MainScaffold>
             onSuccess: () {
               Navigator.of(context).pop();
               setState(() => _currentIndex = 1);
+              AnalyticsService.instance.logJournalHistoryViewed();
             },
           ),
         ),

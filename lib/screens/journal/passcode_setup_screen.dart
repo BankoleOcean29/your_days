@@ -85,6 +85,7 @@ class _PasscodeSetupScreenState extends State<PasscodeSetupScreen>
     PasscodeService.instance.savePin(_pin);
     PasscodeService.instance.unlock(_pin);
     AnalyticsService.instance.logJournalPasscodeSet();
+    AnalyticsService.instance.logPinSetupCompleted();
     widget.onSuccess();
   }
 
