@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "255595089158",
+    "project_id": "your-days-4aad4",
+    "storage_bucket": "your-days-4aad4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:255595089158:android:955746c5acd6f642f62287",
+        "android_client_info": {
+          "package_name": "com.example.your_days"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPaBMT190aknlewXycIXK95K5LdjPaBew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:255595089158:android:5c745a3b3d488c4ff62287",
+        "android_client_info": {
+          "package_name": "com.oceanfirm.yourdays"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPaBMT190aknlewXycIXK95K5LdjPaBew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
