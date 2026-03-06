@@ -122,6 +122,22 @@ class PreferencesService {
     }
   }
 
+  // ── Atomic onboarding save ─────────────────────────────────────────────────
+  /// Awaits every SharedPreferences write so data is guaranteed on disk before
+  /// the caller navigates away from the onboarding flow.
+  Future<void> saveOnboardingData({
+    required String displayName,
+    String? birthdate,
+    required String beliefTrack,
+    String? zodiacSign,
+  }) async {
+    await _prefs.setString(_kUserName, displayName);
+    if (birthdate != null) await _prefs.setString(_kUserBirthdate, birthdate);
+    await _prefs.setString(_kBeliefTrack, beliefTrack);
+    if (zodiacSign != null) await _prefs.setString(_kZodiacSign, zodiacSign);
+    await _prefs.setBool(_kOnboardingCompleted, true);
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
   Future<void> clearAll() => _prefs.clear();
 }

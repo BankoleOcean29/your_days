@@ -19,6 +19,7 @@ class _JournalHubScreenState extends State<JournalHubScreen> {
   List<JournalEntry> _entries = [];
   List<JournalEntry> _filtered = [];
   bool _loading = true;
+  bool _hasLoaded = false; // true only after a real DB fetch succeeds
   final _searchController = TextEditingController();
   bool _searching = false;
 
@@ -37,9 +38,22 @@ class _JournalHubScreenState extends State<JournalHubScreen> {
   @override
   void didUpdateWidget(JournalHubScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Triggered when MainScaffold rebuilds after unlock — kick off the real load.
-    if (PasscodeService.instance.isUnlocked && _loading) {
+    final unlocked = PasscodeService.instance.isUnlocked;
+    if (unlocked && !_hasLoaded) {
+      // Session just became active — load entries for the first time (or after
+      // a lock/re-auth cycle).
       _loadEntries();
+    } else if (!unlocked && _hasLoaded) {
+      // Session locked — clear in-memory entries and reset so they are
+      // re-fetched fresh on the next unlock (also clears plaintext from RAM).
+      setState(() {
+        _hasLoaded = false;
+        _loading = true;
+        _entries = [];
+        _filtered = [];
+        _searching = false;
+        _searchController.clear();
+      });
     }
   }
 
@@ -55,6 +69,7 @@ class _JournalHubScreenState extends State<JournalHubScreen> {
         _entries = entries;
         _filtered = entries;
         _loading = false;
+        _hasLoaded = true;
       });
     }
   }

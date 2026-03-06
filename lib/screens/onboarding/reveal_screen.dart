@@ -108,16 +108,13 @@ class _RevealScreenState extends State<RevealScreen>
   }
 
   Future<void> _complete() async {
-    final prefs = PreferencesService.instance;
-    prefs.userName = widget.data.displayName;
-    if (widget.data.birthdate != null) {
-      prefs.userBirthdate = widget.data.birthdate!.toIso8601String();
-    }
-    prefs.beliefTrack = widget.data.beliefTrack;
-    if (widget.data.zodiacSign != null) {
-      prefs.zodiacSign = widget.data.zodiacSign;
-    }
-    prefs.onboardingCompleted = true;
+    // Await every write so all data is flushed to disk before we navigate.
+    await PreferencesService.instance.saveOnboardingData(
+      displayName: widget.data.displayName,
+      birthdate: widget.data.birthdate?.toIso8601String(),
+      beliefTrack: widget.data.beliefTrack,
+      zodiacSign: widget.data.zodiacSign,
+    );
 
     AnalyticsService.instance.logOnboardingCompleted(
       beliefTrack: widget.data.beliefTrack,
