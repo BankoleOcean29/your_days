@@ -107,11 +107,14 @@ class _JournalEditorScreenState extends State<JournalEditorScreen> {
       }
     } catch (_) {
       if (mounted) {
+        final isSessionExpired = PasscodeService.instance.sessionPin == null;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: snackBg,
             content: Text(
-              'Could not save. Device storage may be full.',
+              isSessionExpired
+                  ? 'Session expired. Please re-authenticate.'
+                  : 'Could not save. Please try again.',
               style: GoogleFonts.nunito(color: snackText),
             ),
             behavior: SnackBarBehavior.floating,
@@ -119,6 +122,7 @@ class _JournalEditorScreenState extends State<JournalEditorScreen> {
                 borderRadius: BorderRadius.circular(8)),
           ),
         );
+        if (isSessionExpired) Navigator.of(context).pop(false);
       }
     } finally {
       if (mounted) setState(() => _saving = false);

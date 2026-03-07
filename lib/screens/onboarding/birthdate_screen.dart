@@ -45,6 +45,7 @@ class _BirthdateScreenState extends State<BirthdateScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime(now.year - 5, now.month, now.day),
       helpText: 'Select your birthdate',
+      initialDatePickerMode: DatePickerMode.year,
       builder: (context, child) => Theme(
         data: Theme.of(context),
         child: child!,

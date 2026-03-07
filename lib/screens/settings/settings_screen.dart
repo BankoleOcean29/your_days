@@ -221,6 +221,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now().subtract(const Duration(days: 365 * 5)),
       helpText: 'SELECT YOUR BIRTHDAY',
+      initialDatePickerMode: DatePickerMode.year,
     );
     if (picked != null) {
       PreferencesService.instance.userBirthdate =

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseService {
@@ -11,8 +12,15 @@ class DatabaseService {
   }
 
   static Future<Database> _open() async {
-    final dbPath = await getDatabasesPath();
-    final fullPath = '$dbPath/your_years.db';
+    // On web, getDatabasesPath() is not meaningful with sqflite_common_ffi_web;
+    // use a simple filename so the ffi-web factory maps it to IndexedDB correctly.
+    final String fullPath;
+    if (kIsWeb) {
+      fullPath = 'your_years.db';
+    } else {
+      final dbPath = await getDatabasesPath();
+      fullPath = '$dbPath/your_years.db';
+    }
 
     return openDatabase(
       fullPath,

@@ -153,33 +153,38 @@ class _PasscodeSetupScreenState extends State<PasscodeSetupScreen>
               style: GoogleFonts.nunito(fontSize: 15, color: neutral600),
             ),
 
-            const Spacer(),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  PinDots(
+                    filled: _pin.length,
+                    hasError: _hasError,
+                    shakeAnimation: _shakeAnimation,
+                  ),
 
-            PinDots(
-              filled: _pin.length,
-              hasError: _hasError,
-              shakeAnimation: _shakeAnimation,
-            ),
+                  if (_hasError) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      "PINs don't match. Try again.",
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
 
-            if (_hasError) ...[
-              const SizedBox(height: 12),
-              Text(
-                "PINs don't match. Try again.",
-                style: GoogleFonts.nunito(
-                  fontSize: 13,
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                  const SizedBox(height: 28),
+
+                  PinKeypad(
+                    onDigit: _onDigit,
+                    onDelete: _onDelete,
+                  ),
+                ],
               ),
-            ],
-
-            const Spacer(),
-
-            PinKeypad(
-              onDigit: _onDigit,
-              onDelete: _onDelete,
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
           ],
         ),
       ),

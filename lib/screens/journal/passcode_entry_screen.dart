@@ -213,20 +213,25 @@ class _PasscodeEntryScreenState extends State<PasscodeEntryScreen>
                 style: GoogleFonts.nunito(fontSize: 14, color: neutral600),
               ),
 
-            const Spacer(),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  PinDots(
+                    filled: _coolingDown ? 0 : _pin.length,
+                    hasError: _hasError,
+                    shakeAnimation: _shakeAnimation,
+                  ),
 
-            PinDots(
-              filled: _coolingDown ? 0 : _pin.length,
-              hasError: _hasError,
-              shakeAnimation: _shakeAnimation,
-            ),
+                  const SizedBox(height: 28),
 
-            const Spacer(),
-
-            PinKeypad(
-              onDigit: _onDigit,
-              onDelete: _onDelete,
-              enabled: !_coolingDown,
+                  PinKeypad(
+                    onDigit: _onDigit,
+                    onDelete: _onDelete,
+                    enabled: !_coolingDown,
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 16),

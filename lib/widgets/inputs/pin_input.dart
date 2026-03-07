@@ -107,7 +107,7 @@ class PinKeypad extends StatelessWidget {
   Widget _row(
       BuildContext context, List<String> keys, double keySize, double fontSize) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 9),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: keys
