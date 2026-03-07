@@ -9,5 +9,5 @@ abstract class AppConstants {
   static const int kJournalCharLimit = 5000;
   static const int kJournalCharWarning = 4500;
 
-  static const int kSessionLockMinutes = 1;
+  static const int kSessionLockMinutes = 15;
 }

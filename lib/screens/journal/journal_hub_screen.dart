@@ -63,14 +63,18 @@ class _JournalHubScreenState extends State<JournalHubScreen> {
       return;
     }
     PasscodeService.instance.refreshSession();
-    final entries = await JournalRepository.instance.getAllEntries();
-    if (mounted) {
-      setState(() {
-        _entries = entries;
-        _filtered = entries;
-        _loading = false;
-        _hasLoaded = true;
-      });
+    try {
+      final entries = await JournalRepository.instance.getAllEntries();
+      if (mounted) {
+        setState(() {
+          _entries = entries;
+          _filtered = entries;
+          _loading = false;
+          _hasLoaded = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
     }
   }
 

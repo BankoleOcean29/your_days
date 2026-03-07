@@ -22,12 +22,9 @@ class _MainScaffoldState extends State<MainScaffold>
     with WidgetsBindingObserver {
   int _currentIndex = 0;
 
-  static const _screens = [
-    HomeScreen(),
-    JournalHubScreen(),
-    WeeklyWordScreen(),
-    SettingsScreen(),
-  ];
+  // Incremented on every successful journal auth. Changing the key remounts
+  // JournalHubScreen so initState always runs a fresh _loadEntries after login.
+  int _journalReloadToken = 0;
 
   @override
   void initState() {
@@ -90,7 +87,10 @@ class _MainScaffoldState extends State<MainScaffold>
           builder: (_) => PasscodeSetupScreen(
             onSuccess: () {
               Navigator.of(context).pop();
-              setState(() => _currentIndex = 1);
+              setState(() {
+                _journalReloadToken++;
+                _currentIndex = 1;
+              });
               AnalyticsService.instance.logJournalHistoryViewed();
             },
           ),
@@ -103,7 +103,10 @@ class _MainScaffoldState extends State<MainScaffold>
           builder: (_) => PasscodeEntryScreen(
             onSuccess: () {
               Navigator.of(context).pop();
-              setState(() => _currentIndex = 1);
+              setState(() {
+                _journalReloadToken++;
+                _currentIndex = 1;
+              });
               AnalyticsService.instance.logJournalHistoryViewed();
             },
           ),
@@ -117,7 +120,12 @@ class _MainScaffoldState extends State<MainScaffold>
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: [
+          const HomeScreen(),
+          JournalHubScreen(key: ValueKey(_journalReloadToken)),
+          const WeeklyWordScreen(),
+          const SettingsScreen(),
+        ],
       ),
       bottomNavigationBar: AppBottomNav(
         currentIndex: _currentIndex,
